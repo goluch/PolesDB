@@ -1,0 +1,1 @@
+Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\NET_PC\2\zad2\DataBase\Database.mdf;Integrated Security=True
