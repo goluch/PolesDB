@@ -1,11 +1,12 @@
-﻿using Domain.Common;
+﻿using DataBase.Common;
+using Domain.Common;
 
 namespace DataBase.Model
 {
     public class Employment : BaseEntity<int>
     {
-        Company Company {  get; set; }
-        Person Emploee {  get; set; }
-        Contract Contract { get; set; }
+        public Company Company { get; set; }
+        public Person Emploee {  get; set; }
+        public Contract Contract { get; set; }
     }
 }

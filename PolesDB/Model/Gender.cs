@@ -1,5 +1,4 @@
-﻿using Domain.Common;
-using System.IO;
+﻿using DataBase.Common;
 
 namespace DataBase.Model
 {

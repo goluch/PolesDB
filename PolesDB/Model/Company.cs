@@ -1,10 +1,10 @@
-﻿using Domain.Common;
+﻿using DataBase.Common;
 
 namespace DataBase.Model
 {
     public class Company : BaseEntity<int>
     {
-        string Name { get; set; }
-        Person Boss { get; set; }
+        public string Name { get; set; }
+        public Person Boss { get; set; }
     }
 }
