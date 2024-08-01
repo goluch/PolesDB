@@ -36,18 +36,23 @@ namespace PolesDB.Data
         {
             throw new NotImplementedException();
         }
-
         private static List<Employment> SetRelations(IList<Person> fakePersons, IList<Company> fakeCompanies)
         {
             var rand = new Random();
+            var fakeEmployments = new List<Employment>();
+            foreach (var company in fakeCompanies)
+            {
+                var bossIndex = rand.Next(0, fakePersons.Count());
+                AddNewEmployment(fakeCompanies, fakeEmployments, fakePersons[bossIndex], company, Contract.EmploymentContract);
+            }
             const double hasParentPropability = 0.9;
             const double hasPartnerPropability = 0.6;
             foreach (var person in fakePersons)
             {
                 if (rand.NextDouble() < hasParentPropability)
                 {
-                    var itemIndex = rand.Next(0, fakePersons.Count());
-                    person.Mother = fakePersons[itemIndex];
+                    var personIndex = rand.Next(0, fakePersons.Count());
+                    person.Mother = fakePersons[personIndex];
                 }
                 if (rand.NextDouble() < hasParentPropability)
                 {
@@ -65,23 +70,36 @@ namespace PolesDB.Data
                         if (itemIndex == fakePersons.Count()) break;
                     }
                 }
-                //var contractsNumber = rand.Next(0, 4);
-                //for (var i = 0; i < contractsNumber; i++)
-                //{
-
-                //}
+                var contractsNumber = rand.Next(0, 4);
+                const double employmentContractPropability = 0.5;
+                for (var i = 0; i < contractsNumber; i++)
+                {
+                    var companyIndex = rand.Next(0, fakeCompanies.Count());
+                    if (person.Employments.Where(e => e.Company == fakeCompanies[companyIndex]).First() == null)
+                    {
+                        AddNewEmployment(fakeCompanies, fakeEmployments, person, fakeCompanies[companyIndex],
+                            (rand.Next(0, 1) > employmentContractPropability) ? Contract.EmploymentContract : Contract.MandateContract);
+                    }
+                }
             }
-            var fakeEmployments = new List<Employment>();
-            foreach (var company in fakeCompanies)
-            {
-                var bossIndex = rand.Next(0, fakePersons.Count());
-                var newEmployment = new Employment { Company = company,
-                    Contract = new Contract("EmploymentContract"),
-                    Emploee = fakePersons[bossIndex] };
-                fakeEmployments.Add(newEmployment);
-            }
-            // todo: zatrudnić ludzi, uważając na powtórzenia
             return fakeEmployments;
+        }
+
+        private static void AddNewEmployment(IList<Company> fakeCompanies,
+            List<Employment> fakeEmployments,
+            Person person,
+            Company company,
+            string contract)
+        {
+            var newEmployment = (new Employment
+            {
+                Company = company,
+                Contract = new Contract(contract),
+                Emploee = person
+            });
+            person.Employments.Add(newEmployment);
+            company.Employments.Add(newEmployment);
+            fakeEmployments.Add(newEmployment);
         }
 
         public void GenerateFakeData()

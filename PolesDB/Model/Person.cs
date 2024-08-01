@@ -11,5 +11,6 @@ namespace DataBase.Model
         public Person? Mother { get; set; }
         public Person? Father { get; set; }
         public Person? Partner { get; set; }
+        public IList<Employment> Employments { get; set; }
     }
 }
