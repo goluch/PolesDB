@@ -52,12 +52,12 @@ namespace PolesDB.Data
                 if (rand.NextDouble() < hasParentPropability)
                 {
                     var personIndex = rand.Next(0, fakePersons.Count());
-                    person.Mother = fakePersons[personIndex];
+                    person.Parent = fakePersons[personIndex];
                 }
                 if (rand.NextDouble() < hasParentPropability)
                 {
                     var itemIndex = rand.Next(0, fakePersons.Count());
-                    person.Father = fakePersons[itemIndex];
+                    person.Parent = fakePersons[itemIndex];
                 }
                 if (rand.NextDouble() < hasPartnerPropability)
                 {

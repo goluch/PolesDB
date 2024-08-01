@@ -16,8 +16,26 @@ namespace DataBase.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("DataSource=./PolesDB.db");
-
             base.OnConfiguring(optionsBuilder);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Person>(entity =>
+            {
+                entity.HasOne(p => p.Parent)
+                .WithMany(p => p.Children);
+                entity.HasOne(p => p.Partner)
+                .WithOne()
+                .IsRequired(false);
+                //entity.HasMany(p => p.ConnectionStartcity)
+                //    .WithOne(d => d.StartCity)
+                //    .HasForeignKey(d => d.StartCityId);
+
+                //entity.HasMany(p => p.ConnectionEndCity)
+                //    .WithOne(d => d.EndCity)
+                //    .HasForeignKey(d => d.EndCityId);
+            });
         }
     }
 }

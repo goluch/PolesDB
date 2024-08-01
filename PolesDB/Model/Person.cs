@@ -8,9 +8,9 @@ namespace DataBase.Model
         public DateTime BirthDate { get; set; }
         public Gender Gender { get; set; }
         public int Earnings { get; set; }
-        public Person? Mother { get; set; }
-        public Person? Father { get; set; }
+        public Person? Parent { get; set; }
         public Person? Partner { get; set; }
-        public IList<Employment> Employments { get; set; }
+        public ICollection<Person> Children { get; set; }
+        public ICollection<Employment> Employments { get; set; }
     }
 }
