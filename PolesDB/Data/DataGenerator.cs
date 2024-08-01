@@ -22,7 +22,7 @@ namespace PolesDB.Data
                 .RuleFor(p => p.Forename, f => f.Person.FirstName)
                 .RuleFor(p => p.Surname, f => f.Person.LastName)
                 .RuleFor(p => p.BirthDate, f => f.Person.DateOfBirth)
-                .RuleFor(p => p.Gender, f => f.PickRandom<Gender>())
+                //.RuleFor(p => p.Gender, f => f.PickRandom<Gender>())
                 .RuleFor(p => p.Earnings, f => f.Random.Int(4300, 100000))
                 .Generate(100);
         }
@@ -65,9 +65,12 @@ namespace PolesDB.Data
                     int i = 0;
                     while (person.Gender == fakePersons[itemIndex].Gender)
                     {
-                        person.Partner = fakePersons[itemIndex + i];
                         i++;
-                        if (itemIndex == fakePersons.Count()) break;
+                        if (itemIndex + i == fakePersons.Count())
+                        {
+                            break;
+                        }
+                        person.Partner = fakePersons[itemIndex + i];
                     }
                 }
                 var contractsNumber = rand.Next(0, 4);
@@ -75,7 +78,7 @@ namespace PolesDB.Data
                 for (var i = 0; i < contractsNumber; i++)
                 {
                     var companyIndex = rand.Next(0, fakeCompanies.Count());
-                    if (person.Employments.Where(e => e.Company == fakeCompanies[companyIndex]).First() == null)
+                    if (person.Employments.Where(e => e.Company == fakeCompanies[companyIndex]).Any())
                     {
                         AddNewEmployment(fakeCompanies, fakeEmployments, person, fakeCompanies[companyIndex],
                             (rand.Next(0, 1) > employmentContractPropability) ? Contract.EmploymentContract : Contract.MandateContract);

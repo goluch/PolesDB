@@ -10,7 +10,7 @@ namespace DataBase.Model
         public int Earnings { get; set; }
         public Person? Parent { get; set; }
         public Person? Partner { get; set; }
-        public ICollection<Person> Children { get; set; }
-        public ICollection<Employment> Employments { get; set; }
+        public ICollection<Person> Children { get; set; } = [];
+        public ICollection<Employment> Employments { get; set; } = [];
     }
 }

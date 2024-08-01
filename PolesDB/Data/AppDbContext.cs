@@ -13,6 +13,12 @@ namespace DataBase.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<Employment> Contracts { get; set; }
 
+        public AppDbContext()
+            : base()
+        {
+            Database.EnsureCreated();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("DataSource=./PolesDB.db");
