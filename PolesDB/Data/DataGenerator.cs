@@ -20,8 +20,8 @@ namespace PolesDB.Data
         {
             var genders = new Gender[]
             {
-                new Gender { Value = Gender.Male },
-                new Gender { Value = Gender.Female }
+                new Gender(Gender.Male),
+                new Gender(Gender.Female)
             };
             return new Bogus.Faker<Person>()
                 .RuleFor(p => p.Forename, f => f.Person.FirstName)
