@@ -8,7 +8,7 @@ namespace PolesDB.Data
     {
         public void Configure(EntityTypeBuilder<Employment> builder)
         {
-            builder.OwnsOne(e => e.Contract);
+            //builder.OwnsOne(e => e.Contract);
         }
     }
 }

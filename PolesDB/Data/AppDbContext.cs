@@ -1,5 +1,6 @@
 ﻿using DataBase.Model;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace DataBase.Data
 {
@@ -27,8 +28,13 @@ namespace DataBase.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Employment>(entity =>
+            {
+                entity.OwnsOne(e => e.Contract);
+            });
             modelBuilder.Entity<Person>(entity =>
             {
+                entity.OwnsOne(p => p.Gender);
                 entity.HasOne(p => p.Parent)
                 .WithMany(p => p.Children);
                 entity.HasOne(p => p.Partner)

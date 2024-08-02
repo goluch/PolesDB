@@ -8,7 +8,12 @@ namespace PolesDB.Data
     {
         public void Configure(EntityTypeBuilder<Person> builder)
         {
-            builder.OwnsOne(p => p.Gender);
+            //builder.OwnsOne(p => p.Gender);
+            //builder.HasOne(p => p.Parent)
+            //.WithMany(p => p.Children);
+            //builder.HasOne(p => p.Partner)
+            //.WithOne(p => p.Partner)
+            //.IsRequired(false);
         }
     }
 }
