@@ -3,7 +3,7 @@ using System.Diagnostics.Metrics;
 
 namespace DataBase.Model
 {
-    public class Gender : BaseValueObject<int>
+    public class Gender : ValueObject
     {
         public string Value { get; private set; }
 

@@ -2,7 +2,7 @@
 
 namespace Domain.Common
 {
-    public class Contract : BaseValueObject<int>
+    public class Contract : ValueObject
     {
         public string Value { get; private set; }
         public Contract(string value)
