@@ -17,7 +17,7 @@ namespace DataBase.Data
         public AppDbContext()
             : base()
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

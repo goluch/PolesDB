@@ -12,41 +12,14 @@ namespace PolesDB.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Contract",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Value = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Contract", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Gender",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Value = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Gender", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Persons",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false),
                     Forename = table.Column<string>(type: "TEXT", nullable: false),
                     Surname = table.Column<string>(type: "TEXT", nullable: false),
                     BirthDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    GenderId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Gender_Value = table.Column<string>(type: "TEXT", nullable: false),
                     Earnings = table.Column<int>(type: "INTEGER", nullable: false),
                     ParentId = table.Column<int>(type: "INTEGER", nullable: true),
                     PartnerId = table.Column<int>(type: "INTEGER", nullable: true)
@@ -54,12 +27,6 @@ namespace PolesDB.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Persons", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Persons_Gender_GenderId",
-                        column: x => x.GenderId,
-                        principalTable: "Gender",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Persons_Persons_ParentId",
                         column: x => x.ParentId,
@@ -100,7 +67,7 @@ namespace PolesDB.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
                     EmploeeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ContractId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Contract_Value = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -109,12 +76,6 @@ namespace PolesDB.Migrations
                         name: "FK_Contracts_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Contracts_Contract_ContractId",
-                        column: x => x.ContractId,
-                        principalTable: "Contract",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -136,19 +97,9 @@ namespace PolesDB.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contracts_ContractId",
-                table: "Contracts",
-                column: "ContractId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Contracts_EmploeeId",
                 table: "Contracts",
                 column: "EmploeeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Persons_GenderId",
-                table: "Persons",
-                column: "GenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Persons_ParentId",
@@ -172,13 +123,7 @@ namespace PolesDB.Migrations
                 name: "Companies");
 
             migrationBuilder.DropTable(
-                name: "Contract");
-
-            migrationBuilder.DropTable(
                 name: "Persons");
-
-            migrationBuilder.DropTable(
-                name: "Gender");
         }
     }
 }

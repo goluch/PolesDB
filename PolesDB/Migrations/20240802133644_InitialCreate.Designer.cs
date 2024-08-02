@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PolesDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240801183830_InitialCreate")]
+    [Migration("20240802133644_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,9 +49,6 @@ namespace PolesDB.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ContractId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("EmploeeId")
                         .HasColumnType("INTEGER");
 
@@ -59,26 +56,9 @@ namespace PolesDB.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("ContractId");
-
                     b.HasIndex("EmploeeId");
 
                     b.ToTable("Contracts");
-                });
-
-            modelBuilder.Entity("DataBase.Model.Gender", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Gender");
                 });
 
             modelBuilder.Entity("DataBase.Model.Person", b =>
@@ -97,9 +77,6 @@ namespace PolesDB.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("GenderId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("ParentId")
                         .HasColumnType("INTEGER");
 
@@ -112,29 +89,12 @@ namespace PolesDB.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GenderId");
-
                     b.HasIndex("ParentId");
 
                     b.HasIndex("PartnerId")
                         .IsUnique();
 
                     b.ToTable("Persons");
-                });
-
-            modelBuilder.Entity("Domain.Common.Contract", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Contract");
                 });
 
             modelBuilder.Entity("DataBase.Model.Company", b =>
@@ -156,33 +116,39 @@ namespace PolesDB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Common.Contract", "Contract")
-                        .WithMany()
-                        .HasForeignKey("ContractId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataBase.Model.Person", "Emploee")
                         .WithMany("Employments")
                         .HasForeignKey("EmploeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("Domain.Common.Contract", "Contract", b1 =>
+                        {
+                            b1.Property<int>("EmploymentId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("EmploymentId");
+
+                            b1.ToTable("Contracts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EmploymentId");
+                        });
+
                     b.Navigation("Company");
 
-                    b.Navigation("Contract");
+                    b.Navigation("Contract")
+                        .IsRequired();
 
                     b.Navigation("Emploee");
                 });
 
             modelBuilder.Entity("DataBase.Model.Person", b =>
                 {
-                    b.HasOne("DataBase.Model.Gender", "Gender")
-                        .WithMany()
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataBase.Model.Person", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
@@ -191,7 +157,25 @@ namespace PolesDB.Migrations
                         .WithOne()
                         .HasForeignKey("DataBase.Model.Person", "PartnerId");
 
-                    b.Navigation("Gender");
+                    b.OwnsOne("DataBase.Model.Gender", "Gender", b1 =>
+                        {
+                            b1.Property<int>("PersonId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("PersonId");
+
+                            b1.ToTable("Persons");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PersonId");
+                        });
+
+                    b.Navigation("Gender")
+                        .IsRequired();
 
                     b.Navigation("Parent");
 
