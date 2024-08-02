@@ -10,7 +10,7 @@ namespace DataBase.Model
         public Gender(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
-            Value = value;
+            this.Value = value;
         }
 
         public static string Male => "Male";

@@ -4,12 +4,12 @@ namespace Domain.Common
 {
     public class Contract : BaseValueObject<int>
     {
+        public string Value { get; private set; }
         public Contract(string value)
         {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
             this.Value = value;
         }
-
-        public string Value { get; set; }
 
         public static string EmploymentContract => "Employment Contract";
         public static string MandateContract => "Mandate Contract";
