@@ -1,10 +1,17 @@
 ﻿using DataBase.Common;
+using System.Diagnostics.Metrics;
 
 namespace DataBase.Model
 {
     public class Gender : BaseValueObject<int>
     {
-        public string Value { get; set; }
+        public string Value { get; private set; }
+
+        public Gender(string value)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
+            Value = value;
+        }
 
         public static string Male => "Male";
         public static string Female => "Female";
