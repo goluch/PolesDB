@@ -18,11 +18,16 @@ namespace PolesDB.Data
         }
         private IList<Person> GenerateFakePersons()
         {
+            var genders = new Gender[]
+            {
+                new Gender { Value = Gender.Male },
+                new Gender { Value = Gender.Female }
+            };
             return new Bogus.Faker<Person>()
                 .RuleFor(p => p.Forename, f => f.Person.FirstName)
                 .RuleFor(p => p.Surname, f => f.Person.LastName)
                 .RuleFor(p => p.BirthDate, f => f.Person.DateOfBirth)
-                //.RuleFor(p => p.Gender, f => f.PickRandom<Gender>())
+                .RuleFor(p => p.Gender, f => f.PickRandom<Gender>(genders))
                 .RuleFor(p => p.Earnings, f => f.Random.Int(4300, 100000))
                 .Generate(100);
         }
@@ -31,10 +36,6 @@ namespace PolesDB.Data
             return new Bogus.Faker<Company>()
                 .RuleFor(c => c.Name, f => f.Company.CompanyName("az"))
                 .Generate(100);
-        }
-        private List<Employment> GenerateFakeContracts()
-        {
-            throw new NotImplementedException();
         }
         private static List<Employment> SetRelations(IList<Person> fakePersons, IList<Company> fakeCompanies)
         {
@@ -47,6 +48,7 @@ namespace PolesDB.Data
             }
             const double hasParentPropability = 0.9;
             const double hasPartnerPropability = 0.6;
+            //todo: poprawić dodawanie dzieci i usunąć cykliczne odwołąnia
             foreach (var person in fakePersons)
             {
                 if (rand.NextDouble() < hasParentPropability)
@@ -108,8 +110,14 @@ namespace PolesDB.Data
         public void GenerateFakeData()
         {
             var fakePersons = GenerateFakePersons();
+            _context.AddRange(fakePersons);
+            _context.SaveChanges();
             var fakeCompanies = GenerateFakeCompanies();
+            _context.AddRange(fakeCompanies);
+            _context.SaveChanges();
             var fakeEmployments = SetRelations(fakePersons, fakeCompanies);
+            _context.AddRange(fakeEmployments);
+            _context.SaveChanges();
         }
     }
 }
