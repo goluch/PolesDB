@@ -19,7 +19,7 @@ namespace DataBase.Data
         public AppDbContext()
             : base()
         {
-            //Comment during updatnig db !!!
+            //Comment this during updatnig db usung ef tools!!!
             //Database.EnsureCreated();
         }
 
@@ -43,14 +43,14 @@ namespace DataBase.Data
             modelBuilder.Entity<Person>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
-                entity.OwnsOne(p => p.Gender, navigationBuilder =>
+                entity.OwnsOne(e => e.Gender, navigationBuilder =>
                 {
                     navigationBuilder.Property(p => p.Value)
                                      .HasColumnName("Gender");
                 });
-                entity.HasOne(p => p.Parent)
-                    .WithMany(p => p.Children);
-                entity.HasOne(p => p.Partner)
+                entity.HasOne(e => e.Parent)
+                    .WithMany(e => e.Children);
+                entity.HasOne(e => e.Partner)
                     .WithOne()
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
@@ -61,8 +61,13 @@ namespace DataBase.Data
             });
             modelBuilder.Entity<Company>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
                 entity.HasMany(e => e.Employed)
                     .WithOne(e => e.Company);
+            });
+            modelBuilder.Entity<Employment>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
             });
         }
     }

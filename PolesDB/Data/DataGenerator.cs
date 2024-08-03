@@ -32,7 +32,7 @@ namespace PolesDB.Data
         private List<Company> GenerateFakeCompanies()
         {
             return new Bogus.Faker<Company>()
-                .RuleFor(c => c.Name, f => f.Company.CompanyName("az"))
+                .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .Generate(100);
         }
         private static List<Employment> SetRelations(IList<Person> fakePersons, IList<Company> fakeCompanies)

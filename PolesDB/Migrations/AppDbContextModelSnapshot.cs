@@ -25,10 +25,7 @@ namespace PolesDB.Migrations
             modelBuilder.Entity("DataBase.Model.Company", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BossId")
                         .HasColumnType("int");
@@ -47,10 +44,7 @@ namespace PolesDB.Migrations
             modelBuilder.Entity("DataBase.Model.Employment", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");

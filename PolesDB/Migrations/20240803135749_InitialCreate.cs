@@ -43,8 +43,7 @@ namespace PolesDB.Migrations
                 name: "Companies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BossId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -63,8 +62,7 @@ namespace PolesDB.Migrations
                 name: "Contracts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     EmploeeId = table.Column<int>(type: "int", nullable: false),
                     Contract = table.Column<string>(type: "nvarchar(max)", nullable: false)
