@@ -15,14 +15,15 @@ namespace PolesDB.Migrations
                 name: "Persons",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    Forename = table.Column<string>(type: "TEXT", nullable: false),
-                    Surname = table.Column<string>(type: "TEXT", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Gender_Value = table.Column<string>(type: "TEXT", nullable: false),
-                    Earnings = table.Column<int>(type: "INTEGER", nullable: false),
-                    ParentId = table.Column<int>(type: "INTEGER", nullable: true),
-                    PartnerId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Forename = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Earnings = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    PartnerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,10 +44,10 @@ namespace PolesDB.Migrations
                 name: "Companies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    BossId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BossId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,11 +64,11 @@ namespace PolesDB.Migrations
                 name: "Contracts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
-                    EmploeeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Contract_Value = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    EmploeeId = table.Column<int>(type: "int", nullable: false),
+                    Contract = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,8 +83,7 @@ namespace PolesDB.Migrations
                         name: "FK_Contracts_Persons_EmploeeId",
                         column: x => x.EmploeeId,
                         principalTable: "Persons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -110,7 +110,8 @@ namespace PolesDB.Migrations
                 name: "IX_Persons_PartnerId",
                 table: "Persons",
                 column: "PartnerId",
-                unique: true);
+                unique: true,
+                filter: "[PartnerId] IS NOT NULL");
         }
 
         /// <inheritdoc />

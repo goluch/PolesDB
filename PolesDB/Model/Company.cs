@@ -6,6 +6,6 @@ namespace DataBase.Model
     {
         public string Name { get; set; }
         public Person Boss { get; set; }
-        public ICollection<Employment> Employments { get; set; } = [];
+        public ICollection<Employment> Employed { get; set; } = [];
     }
 }

@@ -1,6 +1,8 @@
 ﻿using DataBase.Data;
 using DataBase.Model;
 using Domain.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace PolesDB.Data
 {
@@ -11,23 +13,17 @@ namespace PolesDB.Data
         public DataGenerator(AppDbContext context)
         {
             _context = context;
-            _context.RemoveRange(_context.Persons);
-            _context.RemoveRange(_context.Companies);
-            _context.RemoveRange(_context.Contracts);
+            _context.Companies.ExecuteDelete();
+            _context.Contracts.ExecuteDelete();
             _context.SaveChanges();
         }
         private IList<Person> GenerateFakePersons()
         {
-            var genders = new Gender[]
-            {
-                new Gender(Gender.Male),
-                new Gender(Gender.Female)
-            };
             return new Bogus.Faker<Person>()
                 .RuleFor(p => p.Forename, f => f.Person.FirstName)
                 .RuleFor(p => p.Surname, f => f.Person.LastName)
                 .RuleFor(p => p.BirthDate, f => f.Person.DateOfBirth)
-                .RuleFor(p => p.Gender, f => f.PickRandom<Gender>(genders))
+                .RuleFor(p => p.Gender, f => f.PickRandom<Gender>(Gender.SupportedGenders))
                 .RuleFor(p => p.Earnings, f => f.Random.Int(4300, 100000))
                 .Generate(100);
         }
@@ -103,7 +99,7 @@ namespace PolesDB.Data
                 Emploee = person
             });
             person.Employments.Add(newEmployment);
-            company.Employments.Add(newEmployment);
+            company.Employed.Add(newEmployment);
             fakeEmployments.Add(newEmployment);
         }
 

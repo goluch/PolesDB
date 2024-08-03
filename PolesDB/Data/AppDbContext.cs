@@ -1,6 +1,7 @@
 ﻿using DataBase.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;
+using System.Reflection.Metadata;
 
 namespace DataBase.Data
 {
@@ -17,12 +18,14 @@ namespace DataBase.Data
         public AppDbContext()
             : base()
         {
+            //Comment during updatnig db !!!
             //Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("DataSource=./PolesDB.db");
+            //optionsBuilder.UseSqlite("DataSource=./PolesDB.db");
+            optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=PolesData;AttachDbFilename=D:\\NET_PC\\2\\PolesDB\\PolesDB\\db.mdf;Integrated Security=True");
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -30,23 +33,34 @@ namespace DataBase.Data
         {
             modelBuilder.Entity<Employment>(entity =>
             {
-                entity.OwnsOne(e => e.Contract);
+                entity.OwnsOne(e => e.Contract, navigationBuilder =>
+                {
+                    navigationBuilder.Property(e => e.Value)
+                                     .HasColumnName("Contract");
+                });
             });
             modelBuilder.Entity<Person>(entity =>
             {
-                entity.OwnsOne(p => p.Gender);
+                entity.OwnsOne(p => p.Gender, navigationBuilder =>
+                {
+                    navigationBuilder.Property(p => p.Value)
+                                     .HasColumnName("Gender");
+                });
                 entity.HasOne(p => p.Parent)
-                .WithMany(p => p.Children);
+                    .WithMany(p => p.Children);
                 entity.HasOne(p => p.Partner)
-                .WithOne()
-                .IsRequired(false);
-                //entity.HasMany(p => p.ConnectionStartcity)
-                //    .WithOne(d => d.StartCity)
-                //    .HasForeignKey(d => d.StartCityId);
+                    .WithOne()
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.Employments)
+                    .WithOne(e => e.Emploee)
+                    .OnDelete(DeleteBehavior.NoAction);
 
-                //entity.HasMany(p => p.ConnectionEndCity)
-                //    .WithOne(d => d.EndCity)
-                //    .HasForeignKey(d => d.EndCityId);
+            });
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.HasMany(e => e.Employed)
+                    .WithOne(e => e.Company);
             });
         }
     }

@@ -3,6 +3,7 @@ using System;
 using DataBase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -11,27 +12,33 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PolesDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240802133644_InitialCreate")]
+    [Migration("20240803131949_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("DataBase.Model.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BossId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -44,13 +51,15 @@ namespace PolesDB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CompanyId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("EmploeeId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -65,34 +74,37 @@ namespace PolesDB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BirthDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Earnings")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("Forename")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ParentId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int?>("PartnerId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
 
                     b.HasIndex("PartnerId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[PartnerId] IS NOT NULL");
 
                     b.ToTable("Persons");
                 });
@@ -111,7 +123,7 @@ namespace PolesDB.Migrations
             modelBuilder.Entity("DataBase.Model.Employment", b =>
                 {
                     b.HasOne("DataBase.Model.Company", "Company")
-                        .WithMany("Employments")
+                        .WithMany("Employed")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -119,17 +131,18 @@ namespace PolesDB.Migrations
                     b.HasOne("DataBase.Model.Person", "Emploee")
                         .WithMany("Employments")
                         .HasForeignKey("EmploeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.OwnsOne("Domain.Common.Contract", "Contract", b1 =>
                         {
                             b1.Property<int>("EmploymentId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("int");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("TEXT");
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Contract");
 
                             b1.HasKey("EmploymentId");
 
@@ -155,16 +168,18 @@ namespace PolesDB.Migrations
 
                     b.HasOne("DataBase.Model.Person", "Partner")
                         .WithOne()
-                        .HasForeignKey("DataBase.Model.Person", "PartnerId");
+                        .HasForeignKey("DataBase.Model.Person", "PartnerId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.OwnsOne("DataBase.Model.Gender", "Gender", b1 =>
                         {
                             b1.Property<int>("PersonId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("int");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("TEXT");
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Gender");
 
                             b1.HasKey("PersonId");
 
@@ -184,7 +199,7 @@ namespace PolesDB.Migrations
 
             modelBuilder.Entity("DataBase.Model.Company", b =>
                 {
-                    b.Navigation("Employments");
+                    b.Navigation("Employed");
                 });
 
             modelBuilder.Entity("DataBase.Model.Person", b =>
