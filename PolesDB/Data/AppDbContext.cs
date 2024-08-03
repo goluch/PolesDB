@@ -1,5 +1,6 @@
 ﻿using DataBase.Model;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Contracts;
 using System.Reflection.Metadata;
 
@@ -41,6 +42,7 @@ namespace DataBase.Data
             });
             modelBuilder.Entity<Person>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
                 entity.OwnsOne(p => p.Gender, navigationBuilder =>
                 {
                     navigationBuilder.Property(p => p.Value)

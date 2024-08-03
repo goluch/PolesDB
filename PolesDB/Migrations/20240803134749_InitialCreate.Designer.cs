@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PolesDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240803131949_InitialCreate")]
+    [Migration("20240803134749_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -73,10 +73,7 @@ namespace PolesDB.Migrations
             modelBuilder.Entity("DataBase.Model.Person", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");

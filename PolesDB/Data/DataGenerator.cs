@@ -21,6 +21,7 @@ namespace PolesDB.Data
         private IList<Person> GenerateFakePersons()
         {
             return new Bogus.Faker<Person>()
+                .RuleFor(p => p.Id, f => f.IndexFaker)
                 .RuleFor(p => p.Forename, f => f.Person.FirstName)
                 .RuleFor(p => p.Surname, f => f.Person.LastName)
                 .RuleFor(p => p.BirthDate, f => f.Person.DateOfBirth)
