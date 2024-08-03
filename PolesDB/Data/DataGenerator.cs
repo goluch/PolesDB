@@ -13,6 +13,7 @@ namespace PolesDB.Data
         public DataGenerator(AppDbContext context)
         {
             _context = context;
+            _context.Persons.ExecuteDelete();
             _context.Companies.ExecuteDelete();
             _context.Contracts.ExecuteDelete();
             _context.SaveChanges();
