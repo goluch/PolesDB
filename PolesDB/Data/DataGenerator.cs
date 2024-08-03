@@ -15,7 +15,7 @@ namespace PolesDB.Data
             _context = context;
             _context.Persons.ExecuteDelete();
             _context.Companies.ExecuteDelete();
-            _context.Contracts.ExecuteDelete();
+            _context.Employments.ExecuteDelete();
             _context.SaveChanges();
         }
         private IList<Person> GenerateFakePersons()
@@ -32,17 +32,19 @@ namespace PolesDB.Data
         private List<Company> GenerateFakeCompanies()
         {
             return new Bogus.Faker<Company>()
+                .RuleFor(p => p.Id, f => f.IndexFaker)
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .Generate(100);
         }
         private static List<Employment> SetRelations(IList<Person> fakePersons, IList<Company> fakeCompanies)
         {
+            var key = 0;
             var rand = new Random();
             var fakeEmployments = new List<Employment>();
             foreach (var company in fakeCompanies)
             {
                 var bossIndex = rand.Next(0, fakePersons.Count());
-                AddNewEmployment(fakeCompanies, fakeEmployments, fakePersons[bossIndex], company, Contract.EmploymentContract);
+                AddNewEmployment(fakeCompanies, fakeEmployments, key++, fakePersons[bossIndex], company, Contract.EmploymentContract);
             }
             const double hasParentPropability = 0.9;
             const double hasPartnerPropability = 0.6;
@@ -80,7 +82,7 @@ namespace PolesDB.Data
                     var companyIndex = rand.Next(0, fakeCompanies.Count());
                     if (person.Employments.Where(e => e.Company == fakeCompanies[companyIndex]).Any())
                     {
-                        AddNewEmployment(fakeCompanies, fakeEmployments, person, fakeCompanies[companyIndex],
+                        AddNewEmployment(fakeCompanies, fakeEmployments, key++, person, fakeCompanies[companyIndex],
                             (rand.Next(0, 1) > employmentContractPropability) ? Contract.EmploymentContract : Contract.MandateContract);
                     }
                 }
@@ -90,12 +92,14 @@ namespace PolesDB.Data
 
         private static void AddNewEmployment(IList<Company> fakeCompanies,
             List<Employment> fakeEmployments,
+            int keyId,
             Person person,
             Company company,
             string contract)
         {
             var newEmployment = (new Employment
             {
+                Id = keyId,
                 Company = company,
                 Contract = new Contract(contract),
                 Emploee = person

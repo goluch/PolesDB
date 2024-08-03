@@ -58,7 +58,7 @@ namespace PolesDB.Migrations
 
                     b.HasIndex("EmploeeId");
 
-                    b.ToTable("Contracts");
+                    b.ToTable("Employments");
                 });
 
             modelBuilder.Entity("DataBase.Model.Person", b =>
@@ -134,7 +134,7 @@ namespace PolesDB.Migrations
 
                             b1.HasKey("EmploymentId");
 
-                            b1.ToTable("Contracts");
+                            b1.ToTable("Employments");
 
                             b1.WithOwner()
                                 .HasForeignKey("EmploymentId");

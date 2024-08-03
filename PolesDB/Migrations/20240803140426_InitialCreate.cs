@@ -59,7 +59,7 @@ namespace PolesDB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Contracts",
+                name: "Employments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
@@ -69,15 +69,15 @@ namespace PolesDB.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Contracts", x => x.Id);
+                    table.PrimaryKey("PK_Employments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Contracts_Companies_CompanyId",
+                        name: "FK_Employments_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Contracts_Persons_EmploeeId",
+                        name: "FK_Employments_Persons_EmploeeId",
                         column: x => x.EmploeeId,
                         principalTable: "Persons",
                         principalColumn: "Id");
@@ -89,13 +89,13 @@ namespace PolesDB.Migrations
                 column: "BossId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contracts_CompanyId",
-                table: "Contracts",
+                name: "IX_Employments_CompanyId",
+                table: "Employments",
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contracts_EmploeeId",
-                table: "Contracts",
+                name: "IX_Employments_EmploeeId",
+                table: "Employments",
                 column: "EmploeeId");
 
             migrationBuilder.CreateIndex(
@@ -115,7 +115,7 @@ namespace PolesDB.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Contracts");
+                name: "Employments");
 
             migrationBuilder.DropTable(
                 name: "Companies");

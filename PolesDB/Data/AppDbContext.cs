@@ -14,7 +14,7 @@ namespace DataBase.Data
         //Drop-Database
         public DbSet<Person> Persons { get; set; }
         public DbSet<Company> Companies { get; set; }
-        public DbSet<Employment> Contracts { get; set; }
+        public DbSet<Employment> Employments { get; set; }
 
         public AppDbContext()
             : base()
