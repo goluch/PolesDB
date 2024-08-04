@@ -3,6 +3,15 @@
     // Learn more: https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/microservice-ddd-cqrs-patterns/implement-value-objects
     public abstract class ValueObject
     {
+        public static bool operator ==(ValueObject one, ValueObject two)
+        {
+            return EqualOperator(one, two);
+        }
+
+        public static bool operator !=(ValueObject one, ValueObject two)
+        {
+            return NotEqualOperator(one, two);
+        }
         protected static bool EqualOperator(ValueObject left, ValueObject right)
         {
             if (left is null ^ right is null)

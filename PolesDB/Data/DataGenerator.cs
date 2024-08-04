@@ -18,7 +18,7 @@ namespace PolesDB.Data
             _context.Employments.ExecuteDelete();
             _context.SaveChanges();
         }
-        private IList<Person> GenerateFakePersons()
+        private IList<Person> GenerateFakePersons(int count)
         {
             return new Bogus.Faker<Person>()
                 .RuleFor(p => p.Id, f => f.IndexFaker)
@@ -27,14 +27,14 @@ namespace PolesDB.Data
                 .RuleFor(p => p.BirthDate, f => f.Person.DateOfBirth)
                 .RuleFor(p => p.Gender, f => f.PickRandom<Gender>(Gender.SupportedGenders))
                 .RuleFor(p => p.Earnings, f => f.Random.Int(4300, 100000))
-                .Generate(100);
+                .Generate(count);
         }
-        private List<Company> GenerateFakeCompanies()
+        private List<Company> GenerateFakeCompanies(int count)
         {
             return new Bogus.Faker<Company>()
                 .RuleFor(p => p.Id, f => f.IndexFaker)
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
-                .Generate(100);
+                .Generate(count);
         }
         private static List<Employment> SetRelations(IList<Person> fakePersons, IList<Company> fakeCompanies)
         {
@@ -44,10 +44,11 @@ namespace PolesDB.Data
             foreach (var company in fakeCompanies)
             {
                 var bossIndex = rand.Next(0, fakePersons.Count());
+                company.Boss = fakePersons[bossIndex];
                 AddNewEmployment(fakeCompanies, fakeEmployments, key++, fakePersons[bossIndex], company, Contract.EmploymentContract);
             }
-            const double hasParentPropability = 0.9;
-            const double hasPartnerPropability = 0.6;
+            const double hasParentPropability = 0.95;
+            const double hasPartnerPropability = 0.8;
             //todo: poprawić dodawanie dzieci i usunąć cykliczne odwołąnia
             foreach (var person in fakePersons)
             {
@@ -56,34 +57,31 @@ namespace PolesDB.Data
                     var personIndex = rand.Next(0, fakePersons.Count());
                     person.Parent = fakePersons[personIndex];
                 }
-                if (rand.NextDouble() < hasParentPropability)
-                {
-                    var itemIndex = rand.Next(0, fakePersons.Count());
-                    person.Parent = fakePersons[itemIndex];
-                }
                 if (rand.NextDouble() < hasPartnerPropability)
                 {
-                    var itemIndex = rand.Next(0, fakePersons.Count());
+                    var personIndex = rand.Next(0, fakePersons.Count());
                     int i = 0;
-                    while (person.Gender == fakePersons[itemIndex].Gender)
+                    while (person.Gender == fakePersons[personIndex + i].Gender)
                     {
                         i++;
-                        if (itemIndex + i == fakePersons.Count())
+                        if (personIndex + i == fakePersons.Count())
                         {
-                            break;
+                            personIndex = 0;
+                            i = 0;
                         }
-                        person.Partner = fakePersons[itemIndex + i];
                     }
+                    person.Partner = fakePersons[personIndex + i];
+                    fakePersons[personIndex + i].Partner = person;
                 }
-                var contractsNumber = rand.Next(0, 4);
+                var contractsNumber = rand.Next(0, 5);
                 const double employmentContractPropability = 0.5;
                 for (var i = 0; i < contractsNumber; i++)
                 {
                     var companyIndex = rand.Next(0, fakeCompanies.Count());
-                    if (person.Employments.Where(e => e.Company == fakeCompanies[companyIndex]).Any())
+                    if (!person.Employments.Where(e => e.Company == fakeCompanies[companyIndex]).Any())
                     {
                         AddNewEmployment(fakeCompanies, fakeEmployments, key++, person, fakeCompanies[companyIndex],
-                            (rand.Next(0, 1) > employmentContractPropability) ? Contract.EmploymentContract : Contract.MandateContract);
+                            (rand.NextDouble() > employmentContractPropability) ? Contract.EmploymentContract : Contract.MandateContract);
                     }
                 }
             }
@@ -95,13 +93,13 @@ namespace PolesDB.Data
             int keyId,
             Person person,
             Company company,
-            string contract)
+            Contract contract)
         {
             var newEmployment = (new Employment
             {
                 Id = keyId,
                 Company = company,
-                Contract = new Contract(contract),
+                Contract = contract,
                 Emploee = person
             });
             person.Employments.Add(newEmployment);
@@ -109,12 +107,12 @@ namespace PolesDB.Data
             fakeEmployments.Add(newEmployment);
         }
 
-        public void GenerateFakeData()
+        public void GenerateFakeData(int personsCount, int companiesCount)
         {
-            var fakePersons = GenerateFakePersons();
+            var fakePersons = GenerateFakePersons(personsCount);
             _context.AddRange(fakePersons);
             _context.SaveChanges();
-            var fakeCompanies = GenerateFakeCompanies();
+            var fakeCompanies = GenerateFakeCompanies(companiesCount);
             _context.AddRange(fakeCompanies);
             _context.SaveChanges();
             var fakeEmployments = SetRelations(fakePersons, fakeCompanies);

@@ -13,15 +13,15 @@ namespace DataBase.Model
             this.Value = value;
         }
 
-        public static string Male => "Male";
-        public static string Female => "Female";
+        public static Gender Male => new Gender ("Male");
+        public static Gender Female => new Gender("Male");
 
         public static IEnumerable<Gender> SupportedGenders
         {
             get
             {
-                yield return new Gender("Male");
-                yield return new Gender("Female");
+                yield return Male;
+                yield return Female;
             }
         }
 

@@ -11,15 +11,15 @@ namespace Domain.Common
             this.Value = value;
         }
 
-        public static string EmploymentContract => "Employment Contract";
-        public static string MandateContract => "Mandate Contract";
+        public static Contract EmploymentContract => new Contract("Employment Contract") ;
+        public static Contract MandateContract => new Contract("Mandate Contract");
 
         public static IEnumerable<Contract> SupportedContracts
         {
             get
             {
-                yield return new Contract( EmploymentContract );
-                yield return new Contract( MandateContract );
+                yield return EmploymentContract;
+                yield return MandateContract;
             }
         }
 
