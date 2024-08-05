@@ -44,7 +44,7 @@ namespace DataBase.Data
             {
                 entity.OwnsOne(e => e.Contract, navigationBuilder =>
                 {
-                    navigationBuilder.Property(e => e.Value)
+                    navigationBuilder.Property(e => e.ContractType)
                                      .HasColumnName("Contract");
                 });
             });

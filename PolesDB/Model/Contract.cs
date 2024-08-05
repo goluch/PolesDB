@@ -4,11 +4,12 @@ namespace Domain.Common
 {
     public class Contract : ValueObject
     {
-        public string Value { get; private set; }
+        public string ContractType { get; private set; }
+        public Contract() { }
         public Contract(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
-            this.Value = value;
+            this.ContractType = value;
         }
 
         public static Contract EmploymentContract => new Contract("Employment Contract") ;
@@ -23,12 +24,13 @@ namespace Domain.Common
             }
         }
 
-        public string V { get; }
-
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return EmploymentContract;
             yield return MandateContract;
         }
+
+        public static implicit operator string(Contract name) => name.ContractType;
+        public static implicit operator Contract(string value) => new(value);
     }
 }
