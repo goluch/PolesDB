@@ -1,34 +1,76 @@
 ﻿using DataBase.Data;
 using DataBase.Model;
+using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using PolesDB.Data;
-
-static void GenerateFakeData(AppDbContext context)
-{
-    DataGenerator fakeDataGenerator = new DataGenerator(context);
-    fakeDataGenerator.GenerateFakeData(1000,200);
-}
+using System.Diagnostics;
+using System.Linq;
 
 using (var context = new AppDbContext())
 {
     //GenerateFakeData(context); // only once !!!
+    Exercise1(context);
+    Exercise2(context);
+    Exercise3(context);
+}
+static void GenerateFakeData(AppDbContext context)
+{
+    DataGenerator fakeDataGenerator = new DataGenerator(context);
+    fakeDataGenerator.GenerateFakeData(1000, 200);
+}
 
-    IQueryable<Person> mostChildren = (from p in context.Persons.TagWith("Person with the most children query")
-                                       orderby p.Children.Count descending
-                                       select p).Take(1);
-    string query = mostChildren.ToQueryString();
-
-    // To niestety niedziała :(
-    //int mostChildren2 = context.Persons.Max(p => p.Children.Count);
-
+static void Exercise1(AppDbContext context)
+{
+    //code
+    int max = 0;
+    Person maxFemChildPer = null;
+    foreach (Person p in context.Persons)
+    {
+        int fc = 0;
+        foreach (Person c in p.Children)
+        {
+            if (c.Gender == Gender.Female) fc++;
+        }
+        if (max < fc)
+        {
+            max = fc;
+            maxFemChildPer = p;
+        }
+    }
+    //query
     IQueryable<Person> mostFemaleChildren = (from p in context.Persons.TagWith("Person with the most female children query")
                                                  // orderby p.Children.Count(c => c.Gender == Gender.Female) descending
                                              orderby p.Children.Count(c => c.Gender.Value == "Female") descending
                                              select p).Take(1);
-    string query2 = mostFemaleChildren.ToQueryString();
+    Person mostChildrenRes = mostFemaleChildren.Single();
+    //query string
+    string mostChildrenResQuery = mostFemaleChildren.ToQueryString();
+    //checking code and query results
+    Debug.Assert(maxFemChildPer == mostChildrenRes);
+}
 
-    int employmentContractCount = context.Employments/*.AsQueryable()*/.Count(e => e.Contract.ContractType == "Employment Contract");
+static void Exercise2(AppDbContext context)
+{
+    //code
+    int contrEmplNum = 0;
+    int contrTotalNum = context.Employments.Count();
+    foreach (Employment e in context.Employments)
+    {
+        if (e.Contract == Contract.EmploymentContract) contrEmplNum++;
+    }
+    double contrEmplRatio = (double)contrEmplNum / contrTotalNum;
+    //query
+    int contrEmplNumRes = context.Employments/*.AsQueryable()*/.Count(e => e.Contract.ContractType == "Employment Contract");
+    int contrTotalNumRes = context.Employments/*.AsQueryable()*/.Count();
+    double contrEmplRatioRes = (double)contrEmplNumRes / contrTotalNumRes;
+    //query string
 
+    //checking code and query results
+    Debug.Assert(contrEmplRatio == contrEmplRatioRes);
+}
+
+static void Exercise3(AppDbContext context)
+{
     IQueryable<Person> poorestPerson = (from p in context.Persons.TagWith("The poorest person, query")
                                         orderby p.Earnings ascending
                                         select p).Take(1);

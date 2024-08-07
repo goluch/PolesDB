@@ -4,12 +4,12 @@ SELECT COUNT(*) AS [Number of children], ParentID FROM Persons GROUP BY ParentID
 
 -- Person with the most children query
 
-SELECT TOP(1) [p].[Id], [p].[BirthDate], [p].[Earnings], [p].[Forename], [p].[ParentId], [p].[PartnerId], [p].[Surname], [p].[Gender]
+SELECT TOP(1) [p].[Id], [p].[Forename], [p].[Surname]
 FROM [Persons] AS [p]
 ORDER BY (
     SELECT COUNT(*)
     FROM [Persons] AS [p0]
-    WHERE [p].[Id] = [p0].[ParentId]) DESC
+    WHERE [p].[Id] = [p0].[PartnerId]) DESC
 
 -- Person with the most female children query
 
@@ -55,4 +55,4 @@ ORDER BY [p].[Earnings] + CASE
         FROM [Persons] AS [p1]
         LEFT JOIN [Persons] AS [p2] ON [p1].[PartnerId] = [p2].[Id]
         WHERE [p].[Id] = [p1].[ParentId])
-END-*-
+END

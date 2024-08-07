@@ -26,8 +26,7 @@ namespace Domain.Common
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
-            yield return EmploymentContract;
-            yield return MandateContract;
+            yield return ContractType;
         }
 
         public static implicit operator string(Contract name) => name.ContractType;
