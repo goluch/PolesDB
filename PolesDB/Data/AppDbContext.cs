@@ -60,10 +60,10 @@ namespace DataBase.Data
                     .WithMany()
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
-                //entity.HasOne(e => e.Partner)
-                //    .WithOne()
-                //    .IsRequired(false)
-                //    .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.Partner)
+                    .WithOne()
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.NoAction);
                 //entity.HasMany(e => e.Employments)
                 //    .WithOne(e => e.Emploee)
                 //    .OnDelete(DeleteBehavior.NoAction);

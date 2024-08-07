@@ -23,7 +23,8 @@ namespace PolesDB.Migrations
                     Earnings = table.Column<int>(type: "int", nullable: false),
                     MotherId = table.Column<int>(type: "int", nullable: true),
                     FatherId = table.Column<int>(type: "int", nullable: true),
-                    PartnerId = table.Column<int>(type: "int", nullable: true)
+                    PartnerId = table.Column<int>(type: "int", nullable: true),
+                    PersonId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,6 +42,11 @@ namespace PolesDB.Migrations
                     table.ForeignKey(
                         name: "FK_Persons_Persons_PartnerId",
                         column: x => x.PartnerId,
+                        principalTable: "Persons",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Persons_Persons_PersonId",
+                        column: x => x.PersonId,
                         principalTable: "Persons",
                         principalColumn: "Id");
                 });
@@ -116,7 +122,14 @@ namespace PolesDB.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Persons_PartnerId",
                 table: "Persons",
-                column: "PartnerId");
+                column: "PartnerId",
+                unique: true,
+                filter: "[PartnerId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Persons_PersonId",
+                table: "Persons",
+                column: "PersonId");
         }
 
         /// <inheritdoc />

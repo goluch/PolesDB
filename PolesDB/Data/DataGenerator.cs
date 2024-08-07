@@ -13,9 +13,9 @@ namespace PolesDB.Data
         public DataGenerator(AppDbContext context)
         {
             _context = context;
+            _context.Employments.ExecuteDelete();
             _context.Persons.ExecuteDelete();
             _context.Companies.ExecuteDelete();
-            _context.Employments.ExecuteDelete();
             _context.SaveChanges();
         }
         private IList<Person> GenerateFakePersons(int count)

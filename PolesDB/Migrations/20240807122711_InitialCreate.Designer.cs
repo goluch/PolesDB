@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PolesDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240806174737_InitialCreate")]
+    [Migration("20240807122711_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -88,6 +88,9 @@ namespace PolesDB.Migrations
                     b.Property<int?>("PartnerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -98,7 +101,11 @@ namespace PolesDB.Migrations
 
                     b.HasIndex("MotherId");
 
-                    b.HasIndex("PartnerId");
+                    b.HasIndex("PartnerId")
+                        .IsUnique()
+                        .HasFilter("[PartnerId] IS NOT NULL");
+
+                    b.HasIndex("PersonId");
 
                     b.ToTable("Persons");
                 });
@@ -167,8 +174,13 @@ namespace PolesDB.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("DataBase.Model.Person", "Partner")
+                        .WithOne()
+                        .HasForeignKey("DataBase.Model.Person", "PartnerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("DataBase.Model.Person", null)
                         .WithMany("Children")
-                        .HasForeignKey("PartnerId");
+                        .HasForeignKey("PersonId");
 
                     b.OwnsOne("DataBase.Model.Gender", "Gender", b1 =>
                         {
