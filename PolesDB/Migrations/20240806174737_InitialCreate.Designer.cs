@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PolesDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240803140426_InitialCreate")]
+    [Migration("20240806174737_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -75,11 +75,14 @@ namespace PolesDB.Migrations
                     b.Property<int>("Earnings")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FatherId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Forename")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ParentId")
+                    b.Property<int?>("MotherId")
                         .HasColumnType("int");
 
                     b.Property<int?>("PartnerId")
@@ -91,11 +94,11 @@ namespace PolesDB.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("FatherId");
 
-                    b.HasIndex("PartnerId")
-                        .IsUnique()
-                        .HasFilter("[PartnerId] IS NOT NULL");
+                    b.HasIndex("MotherId");
+
+                    b.HasIndex("PartnerId");
 
                     b.ToTable("Persons");
                 });
@@ -116,7 +119,7 @@ namespace PolesDB.Migrations
                     b.HasOne("DataBase.Model.Company", "Company")
                         .WithMany("Employed")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("DataBase.Model.Person", "Emploee")
@@ -130,7 +133,7 @@ namespace PolesDB.Migrations
                             b1.Property<int>("EmploymentId")
                                 .HasColumnType("int");
 
-                            b1.Property<string>("Value")
+                            b1.Property<string>("ContractType")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("Contract");
@@ -153,14 +156,19 @@ namespace PolesDB.Migrations
 
             modelBuilder.Entity("DataBase.Model.Person", b =>
                 {
-                    b.HasOne("DataBase.Model.Person", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId");
+                    b.HasOne("DataBase.Model.Person", "Father")
+                        .WithMany()
+                        .HasForeignKey("FatherId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("DataBase.Model.Person", "Mother")
+                        .WithMany()
+                        .HasForeignKey("MotherId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("DataBase.Model.Person", "Partner")
-                        .WithOne()
-                        .HasForeignKey("DataBase.Model.Person", "PartnerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany("Children")
+                        .HasForeignKey("PartnerId");
 
                     b.OwnsOne("DataBase.Model.Gender", "Gender", b1 =>
                         {
@@ -180,10 +188,12 @@ namespace PolesDB.Migrations
                                 .HasForeignKey("PersonId");
                         });
 
+                    b.Navigation("Father");
+
                     b.Navigation("Gender")
                         .IsRequired();
 
-                    b.Navigation("Parent");
+                    b.Navigation("Mother");
 
                     b.Navigation("Partner");
                 });

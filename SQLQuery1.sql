@@ -40,4 +40,19 @@ ORDER BY [p].[Earnings] + CASE
     ELSE [p0].[Earnings]
 END
 
--- The poorest max 2 generations family, query
+-- The poorest max 2 generation family, query
+
+SELECT TOP(1) [p].[Id], [p].[BirthDate], [p].[Earnings], [p].[Forename], [p].[ParentId], [p].[PartnerId], [p].[Surname], [p].[Gender]
+FROM [Persons] AS [p]
+LEFT JOIN [Persons] AS [p0] ON [p].[PartnerId] = [p0].[Id]
+ORDER BY [p].[Earnings] + CASE
+    WHEN [p0].[Id] IS NULL THEN 0
+    ELSE [p0].[Earnings] + (
+        SELECT COALESCE(SUM([p1].[Earnings] + CASE
+            WHEN [p2].[Id] IS NULL THEN 0
+            ELSE [p2].[Earnings]
+        END), 0)
+        FROM [Persons] AS [p1]
+        LEFT JOIN [Persons] AS [p2] ON [p1].[PartnerId] = [p2].[Id]
+        WHERE [p].[Id] = [p1].[ParentId])
+END-*-

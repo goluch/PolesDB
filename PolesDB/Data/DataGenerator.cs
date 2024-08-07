@@ -25,7 +25,7 @@ namespace PolesDB.Data
                 .RuleFor(p => p.Forename, f => f.Person.FirstName)
                 .RuleFor(p => p.Surname, f => f.Person.LastName)
                 .RuleFor(p => p.BirthDate, f => f.Person.DateOfBirth)
-                .RuleFor(p => p.Gender, f => f.PickRandom<Gender>(Gender.SupportedGenders))
+                .RuleFor(p => p.Gender, f => (f.Person.Gender == Bogus.DataSets.Name.Gender.Male) ? Gender.Male : Gender.Female)
                 .RuleFor(p => p.Earnings, f => f.Random.Int(4300, 100000))
                 .Generate(count);
         }
@@ -48,23 +48,50 @@ namespace PolesDB.Data
                 AddNewEmployment(fakeCompanies, fakeEmployments, key++, fakePersons[bossIndex], company, Contract.EmploymentContract);
             }
             const double hasParentPropability = 0.95;
-            const double hasPartnerPropability = 0.8;
-            //todo: poprawić dodawanie dzieci i usunąć cykliczne odwołąnia
+            const double hasPartnerPropability = 0.4;
             foreach (var person in fakePersons)
             {
                 if (rand.NextDouble() < hasParentPropability)
                 {
+                    int i = 0;
                     var personIndex = rand.Next(0, fakePersons.Count());
-                    person.Parent = fakePersons[personIndex];
+                    for (; person == fakePersons[personIndex + i] ||
+                        fakePersons[personIndex + i].Gender == Gender.Male; i++)
+                    {
+                        if (personIndex + i == fakePersons.Count() - 1)
+                        {
+                            personIndex = 0;
+                            i = 0;
+                        }
+                    }
+                    person.Mother = fakePersons[personIndex + i];
+                    fakePersons[personIndex + i].Children.Add(person);
                 }
-                if (rand.NextDouble() < hasPartnerPropability)
+                if (rand.NextDouble() < hasParentPropability)
                 {
                     var personIndex = rand.Next(0, fakePersons.Count());
                     int i = 0;
-                    while (person.Gender == fakePersons[personIndex + i].Gender)
+                    for (; person == fakePersons[personIndex + i] ||
+                        fakePersons[personIndex + i].Gender == Gender.Female; i++)
                     {
-                        i++;
-                        if (personIndex + i == fakePersons.Count())
+                        if (personIndex + i == fakePersons.Count() - 1)
+                        {
+                            personIndex = 0;
+                            i = 0;
+                        }
+                    }
+                    person.Father = fakePersons[personIndex + i];
+                    fakePersons[personIndex + i].Children.Add(person);
+                }
+                if (person.Partner == null && rand.NextDouble() < hasPartnerPropability)
+                {
+                    var personIndex = rand.Next(0, fakePersons.Count());
+                    int i = 0;
+                    for (; fakePersons[personIndex + i].Partner != null ||
+                        person == fakePersons[personIndex + i] ||
+                        person.Gender == fakePersons[personIndex + i].Gender; i++)
+                    {
+                        if (personIndex + i == fakePersons.Count() - 1)
                         {
                             personIndex = 0;
                             i = 0;

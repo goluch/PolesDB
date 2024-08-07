@@ -21,15 +21,21 @@ namespace PolesDB.Migrations
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Earnings = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    MotherId = table.Column<int>(type: "int", nullable: true),
+                    FatherId = table.Column<int>(type: "int", nullable: true),
                     PartnerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Persons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Persons_Persons_ParentId",
-                        column: x => x.ParentId,
+                        name: "FK_Persons_Persons_FatherId",
+                        column: x => x.FatherId,
+                        principalTable: "Persons",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Persons_Persons_MotherId",
+                        column: x => x.MotherId,
                         principalTable: "Persons",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -74,8 +80,7 @@ namespace PolesDB.Migrations
                         name: "FK_Employments_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Employments_Persons_EmploeeId",
                         column: x => x.EmploeeId,
@@ -99,16 +104,19 @@ namespace PolesDB.Migrations
                 column: "EmploeeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Persons_ParentId",
+                name: "IX_Persons_FatherId",
                 table: "Persons",
-                column: "ParentId");
+                column: "FatherId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Persons_MotherId",
+                table: "Persons",
+                column: "MotherId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Persons_PartnerId",
                 table: "Persons",
-                column: "PartnerId",
-                unique: true,
-                filter: "[PartnerId] IS NOT NULL");
+                column: "PartnerId");
         }
 
         /// <inheritdoc />

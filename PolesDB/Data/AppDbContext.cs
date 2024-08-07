@@ -1,9 +1,5 @@
 ﻿using DataBase.Model;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.Contracts;
-using System.Reflection.Metadata;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataBase.Data
 {
@@ -56,15 +52,21 @@ namespace DataBase.Data
                     navigationBuilder.Property(p => p.Value)
                                      .HasColumnName("Gender");
                 });
-                entity.HasOne(e => e.Parent)
-                    .WithMany(e => e.Children);
-                entity.HasOne(e => e.Partner)
-                    .WithOne()
+                entity.HasOne(e => e.Mother)
+                    .WithMany()
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
-                entity.HasMany(e => e.Employments)
-                    .WithOne(e => e.Emploee)
+                entity.HasOne(e => e.Father)
+                    .WithMany()
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
+                //entity.HasOne(e => e.Partner)
+                //    .WithOne()
+                //    .IsRequired(false)
+                //    .OnDelete(DeleteBehavior.NoAction);
+                //entity.HasMany(e => e.Employments)
+                //    .WithOne(e => e.Emploee)
+                //    .OnDelete(DeleteBehavior.NoAction);
 
             });
             modelBuilder.Entity<Company>(entity =>
@@ -76,6 +78,12 @@ namespace DataBase.Data
             modelBuilder.Entity<Employment>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.HasOne(c => c.Emploee)
+                .WithMany(c => c.Employments)
+                .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(c => c.Company)
+                .WithMany(c => c.Employed)
+                .OnDelete(DeleteBehavior.NoAction);
             });
         }
 
