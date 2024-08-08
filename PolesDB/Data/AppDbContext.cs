@@ -52,12 +52,13 @@ namespace DataBase.Data
                     navigationBuilder.Property(p => p.Value)
                                      .HasColumnName("Gender");
                 });
+                entity.Ignore(p => p.Children);
                 entity.HasOne(e => e.Mother)
-                    .WithMany()
+                    .WithMany(e => e.Doughters)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.Father)
-                    .WithMany()
+                    .WithMany(e => e.Sons)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.Partner)
@@ -72,8 +73,8 @@ namespace DataBase.Data
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
-                entity.HasMany(e => e.Employed)
-                    .WithOne(e => e.Company);
+                //entity.HasMany(e => e.Employed)
+                //    .WithOne(e => e.Company);
             });
             modelBuilder.Entity<Employment>(entity =>
             {

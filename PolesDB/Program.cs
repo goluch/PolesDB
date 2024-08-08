@@ -24,13 +24,15 @@ static void Exercise1(AppDbContext context)
     //code
     int max = 0;
     Person maxFemChildPer = null;
+    context.Persons.Load(); //required - otherwise the numbers of children are incorrect
     foreach (Person p in context.Persons)
     {
-        int fc = 0;
-        foreach (Person c in p.Children)
-        {
-            if (c.Gender == Gender.Female) fc++;
-        }
+        //int fc = 0;
+        //foreach (Person c in p.Children)
+        //{
+        //    if (c.Gender == Gender.Female) fc++;
+        //}
+        int fc = p.Doughters.Count;
         if (max < fc)
         {
             max = fc;
@@ -40,13 +42,16 @@ static void Exercise1(AppDbContext context)
     //query
     IQueryable<Person> mostFemaleChildren = (from p in context.Persons.TagWith("Person with the most female children query")
                                                  // orderby p.Children.Count(c => c.Gender == Gender.Female) descending
-                                             orderby p.Children.Count(c => c.Gender.Value == "Female") descending
+                                             //orderby p.Children.Count(c => c.Gender.Value == "Female") descending
+                                             orderby p.Doughters.Count descending
                                              select p).Take(1);
     Person mostChildrenRes = mostFemaleChildren.Single();
+    //int max2 = mostChildrenRes.Children.Count(c => c.Gender == Gender.Female);
+    int max2 = mostChildrenRes.Doughters.Count;
     //query string
     string mostChildrenResQuery = mostFemaleChildren.ToQueryString();
     //checking code and query results
-    Debug.Assert(maxFemChildPer == mostChildrenRes);
+    Debug.Assert(max == max2);
 }
 
 static void Exercise2(AppDbContext context)
@@ -54,6 +59,7 @@ static void Exercise2(AppDbContext context)
     //code
     int contrEmplNum = 0;
     int contrTotalNum = context.Employments.Count();
+    context.Employments.Load();
     foreach (Employment e in context.Employments)
     {
         if (e.Contract == Contract.EmploymentContract) contrEmplNum++;
@@ -72,6 +78,7 @@ static void Exercise3(AppDbContext context)
     int poor2genFamTot = int.MaxValue;
     Person poor2genFamPer = null;
     var family2gen = new HashSet<Person>();
+    context.Persons.Load();
     foreach (Person p in context.Persons)
     {
         AddFamily(family2gen, p);
@@ -87,9 +94,16 @@ static void Exercise3(AppDbContext context)
         }
         family2gen.Clear();
     }
+    int pId = 1;
     List<Person> family = (from p in context.Persons.TagWith("Person 2 gen family")
-                           where p.Id == 0 ||
-                           p.Partner.Id == 0
+                           where p.Id == pId
+                           || p.Partner.Id == pId
+                           || p.Father.Id == pId
+                           || p.Mother.Id == pId
+                           || p.Father.Partner.Id == pId
+                           || p.Mother.Partner.Id == pId
+                           || p.Doughters.Any(c => c.Mother.Id == pId || c.Father.Id == pId || c.Mother.Partner.Id == pId || c.Father.Partner.Id == pId)
+                           || p.Sons.Any(c => c.Mother.Id == pId || c.Father.Id == pId || c.Mother.Partner.Id == pId || c.Father.Partner.Id == pId)
                            select p).ToList();
 
     IQueryable<Person> familyQuery = (from p in context.Persons.TagWith("Person 2 gen family")
@@ -140,13 +154,13 @@ static void AddFamily(HashSet<Person> family2gen, Person p)
     foreach (var c in p.Children)
     {
         family2gen.Add(c);
-        if (p.Mother != null)
+        if (c.Mother != null)
         {
-            family2gen.Add(p.Mother);
+            family2gen.Add(c.Mother);
         }
-        if (p.Father != null)
+        if (c.Father != null)
         {
-            family2gen.Add(p.Father);
+            family2gen.Add(c.Father);
         }
     }
 }

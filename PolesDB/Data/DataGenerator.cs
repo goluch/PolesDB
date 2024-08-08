@@ -64,8 +64,7 @@ namespace PolesDB.Data
                             i = 0;
                         }
                     }
-                    person.Mother = fakePersons[personIndex + i];
-                    fakePersons[personIndex + i].Children.Add(person);
+                    AddChild(fakePersons, person, i, personIndex);
                 }
                 if (rand.NextDouble() < hasParentPropability)
                 {
@@ -80,8 +79,7 @@ namespace PolesDB.Data
                             i = 0;
                         }
                     }
-                    person.Father = fakePersons[personIndex + i];
-                    fakePersons[personIndex + i].Children.Add(person);
+                    AddChild(fakePersons, person, i, personIndex);
                 }
                 if (person.Partner == null && rand.NextDouble() < hasPartnerPropability)
                 {
@@ -113,6 +111,19 @@ namespace PolesDB.Data
                 }
             }
             return fakeEmployments;
+        }
+
+        private static void AddChild(IList<Person> fakePersons, Person person, int i, int personIndex)
+        {
+            person.Mother = fakePersons[personIndex + i];
+            if (person.Gender == Gender.Male)
+            {
+                fakePersons[personIndex + i].Sons.Add(person);
+            }
+            else
+            {
+                fakePersons[personIndex + i].Doughters.Add(person);
+            }
         }
 
         private static void AddNewEmployment(IList<Company> fakeCompanies,

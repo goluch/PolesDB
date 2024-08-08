@@ -161,12 +161,12 @@ namespace PolesDB.Migrations
             modelBuilder.Entity("DataBase.Model.Person", b =>
                 {
                     b.HasOne("DataBase.Model.Person", "Father")
-                        .WithMany()
+                        .WithMany("Sons")
                         .HasForeignKey("FatherId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("DataBase.Model.Person", "Mother")
-                        .WithMany()
+                        .WithMany("Doughters")
                         .HasForeignKey("MotherId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -216,7 +216,11 @@ namespace PolesDB.Migrations
                 {
                     b.Navigation("Children");
 
+                    b.Navigation("Doughters");
+
                     b.Navigation("Employments");
+
+                    b.Navigation("Sons");
                 });
 #pragma warning restore 612, 618
         }

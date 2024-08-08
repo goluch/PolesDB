@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PolesDB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240807122711_InitialCreate")]
+    [Migration("20240808112016_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -164,12 +164,12 @@ namespace PolesDB.Migrations
             modelBuilder.Entity("DataBase.Model.Person", b =>
                 {
                     b.HasOne("DataBase.Model.Person", "Father")
-                        .WithMany()
+                        .WithMany("Sons")
                         .HasForeignKey("FatherId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("DataBase.Model.Person", "Mother")
-                        .WithMany()
+                        .WithMany("Doughters")
                         .HasForeignKey("MotherId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -219,7 +219,11 @@ namespace PolesDB.Migrations
                 {
                     b.Navigation("Children");
 
+                    b.Navigation("Doughters");
+
                     b.Navigation("Employments");
+
+                    b.Navigation("Sons");
                 });
 #pragma warning restore 612, 618
         }

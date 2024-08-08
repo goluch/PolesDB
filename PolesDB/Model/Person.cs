@@ -1,4 +1,5 @@
 ﻿using DataBase.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace DataBase.Model
 {
     public class Person : BaseEntity<int>
@@ -11,7 +12,13 @@ namespace DataBase.Model
         public Person? Mother { get; set; }
         public Person? Father { get; set; }
         public Person? Partner { get; set; }
-        public ICollection<Person> Children { get; set; } = [];
+        public ICollection<Person> Doughters { get; set; } = [];
+        public ICollection<Person> Sons { get; set; } = [];
+        public IEnumerable<Person> Children {
+            get {
+                return Doughters.Concat(Sons);
+            }
+            set { } }
         public ICollection<Employment> Employments { get; set; } = [];
     }
 }
