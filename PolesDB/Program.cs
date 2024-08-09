@@ -2,6 +2,7 @@
 using DataBase.Model;
 using Domain.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using PolesDB.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -94,33 +95,6 @@ static void Exercise3(AppDbContext context)
         }
         family2gen.Clear();
     }
-    int pId = 1;
-    List<Person> family = (from p in context.Persons.TagWith("Person 2 gen family")
-                           where p.Id == pId
-                           || p.Partner.Id == pId
-                           || p.Father.Id == pId
-                           || p.Mother.Id == pId
-                           || p.Father.Partner.Id == pId
-                           || p.Mother.Partner.Id == pId
-                           || p.Doughters.Any(c => c.Mother.Id == pId || c.Father.Id == pId || c.Mother.Partner.Id == pId || c.Father.Partner.Id == pId)
-                           || p.Sons.Any(c => c.Mother.Id == pId || c.Father.Id == pId || c.Mother.Partner.Id == pId || c.Father.Partner.Id == pId)
-                           select p).ToList();
-
-    IQueryable<Person> familyQuery = (from p in context.Persons.TagWith("Person 2 gen family")
-                                 select p);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     IQueryable<Person> poorestPerson = (from p in context.Persons.TagWith("The poorest person, query")
                                         orderby p.Earnings ascending
@@ -135,17 +109,31 @@ static void Exercise3(AppDbContext context)
     string poorestFamily1genQuery = poorestFamily1gen.ToQueryString();
     Person p1f = poorestFamily1gen.Single();
 
-    IQueryable<Person> poorestFamily2gen = (from p in context.Persons.TagWith("The poorest max 2 generation family, query")
-                                            orderby p.Earnings
-                                                    + (p.Partner == null ? 0 : p.Partner.Earnings
-                                                    + p.Children.Sum(c => c.Earnings
-                                                                  + (c.Partner == null ? 0 : c.Partner.Earnings)
-                                                                  + (c.Mother == null ? 0 : c.Mother.Earnings)
-                                                                  + (c.Father == null ? 0 : c.Father.Earnings))) ascending
-                                            select p).Take(1);
+    IQueryable<Person> poorestFamily2gen = from p in context.Persons
+                    orderby p.Earnings
+                    + (p.Partner == null ? 0 : p.Partner.Earnings)
+                    + p.Doughters.Sum(d => d.Earnings
+                        + (d.Mother == null ? 0 : d.Mother.Earnings)
+                        + (d.Father == null ? 0 : d.Father.Earnings)
+                    )
+                    + p.Sons.Sum(s => s.Earnings
+                        + (s.Mother == null ? 0 : s.Mother.Earnings)
+                        + (s.Father == null ? 0 : s.Father.Earnings)
+                    )
+                    select p;
 
     string poorestFamily2genQuery = poorestFamily2gen.ToQueryString();
-    Person p2f = poorestFamily2gen.Single();
+    Person p2f = poorestFamily2gen.First();
+
+    foreach (var p in poorestFamily2gen)
+    {
+        var sum = p.Earnings
+            + (p.Partner?.Earnings ?? 0)
+            + p.Children.Sum(c => c.Earnings
+                + (c.Mother == null ? 0 : c.Mother.Earnings)
+                + (c.Father == null ? 0 : c.Father.Earnings));
+        Console.WriteLine($"{p.Id} = {sum}");
+    }
 }
 
 static void AddFamily(HashSet<Person> family2gen, Person p)
